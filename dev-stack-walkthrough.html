@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Stack Development Environment</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-elevated: #22222e;
+            --text-primary: #f0f0f5;
+            --text-secondary: #9090a0;
+            --text-muted: #606070;
+            
+            /* Brand colors */
+            --supabase: #3ecf8e;
+            --supabase-dark: #1c8656;
+            --vercel: #ffffff;
+            --react: #61dafb;
+            --nextjs: #ffffff;
+            --vscode: #007acc;
+            --python: #ffd43b;
+            --python-blue: #3776ab;
+            
+            /* Gradients */
+            --gradient-supabase: linear-gradient(135deg, #3ecf8e 0%, #1c8656 100%);
+            --gradient-vercel: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            --gradient-react: linear-gradient(135deg, #61dafb 0%, #21a1cb 100%);
+            --gradient-python: linear-gradient(135deg, #ffd43b 0%, #3776ab 100%);
+            --gradient-vscode: linear-gradient(135deg, #007acc 0%, #0055aa 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(62, 207, 142, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(97, 218, 251, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 212, 59, 0.05) 0%, transparent 50%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #3ecf8e 50%, #61dafb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border: none;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(62, 207, 142, 0.2);
+        }
+
+        .tab.active[data-section="supabase"] { border-bottom: 3px solid var(--supabase); }
+        .tab.active[data-section="vercel"] { border-bottom: 3px solid var(--vercel); }
+        .tab.active[data-section="react-next"] { border-bottom: 3px solid var(--react); }
+        .tab.active[data-section="vscode"] { border-bottom: 3px solid var(--vscode); }
+        .tab.active[data-section="python"] { border-bottom: 3px solid var(--python); }
+        .tab.active[data-section="overview"] { border-bottom: 3px solid #9090a0; }
+
+        .tab-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Section container */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Architecture diagram */
+        .architecture-diagram {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .diagram-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+        }
+
+        .flow-box {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .flow-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .flow-box.supabase { border-top: 3px solid var(--supabase); }
+        .flow-box.vercel { border-top: 3px solid var(--vercel); }
+        .flow-box.react { border-top: 3px solid var(--react); }
+        .flow-box.vscode { border-top: 3px solid var(--vscode); }
+        .flow-box.python { border-top: 3px solid var(--python); }
+
+        .flow-box-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .flow-box-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .flow-arrow {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+        }
+
+        /* Tech cards */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .tech-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .tech-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .tech-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .tech-logo.supabase { background: rgba(62, 207, 142, 0.15); color: var(--supabase); }
+        .tech-logo.vercel { background: rgba(255, 255, 255, 0.1); color: var(--vercel); }
+        .tech-logo.react { background: rgba(97, 218, 251, 0.15); color: var(--react); }
+        .tech-logo.nextjs { background: rgba(255, 255, 255, 0.1); color: var(--nextjs); }
+        .tech-logo.vscode { background: rgba(0, 122, 204, 0.15); color: var(--vscode); }
+        .tech-logo.python { background: rgba(255, 212, 59, 0.15); color: var(--python); }
+
+        .tech-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .tech-card-role {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tech-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* Feature list */
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .feature-list li::before {
+            content: "→";
+            color: var(--supabase);
+            font-weight: bold;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #0d0d12;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .code-block .comment { color: #6a6a80; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .function { color: #82aaff; }
+        .code-block .variable { color: #f78c6c; }
+        .code-block .number { color: #f78c6c; }
+
+        /* Section headers */
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .section-header h2 .icon {
+            font-size: 2.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 700px;
+        }
+
+        /* Workflow steps */
+        .workflow {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .workflow h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            transform: translateX(8px);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-supabase);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            color: #000;
+        }
+
+        .step-content h5 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Connections diagram */
+        .connections {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .connection-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .connection-row:hover {
+            background: var(--bg-primary);
+        }
+
+        .connection-from,
+        .connection-to {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .connection-method {
+            background: var(--bg-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--supabase);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                gap: 4px;
+            }
+
+            .tab {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* File tree styles */
+        .file-tree {
+            background: #0d0d12;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .file-tree .folder {
+            color: var(--react);
+        }
+
+        .file-tree .file {
+            color: var(--text-secondary);
+        }
+
+        .file-tree .special {
+            color: var(--supabase);
+        }
+
+        .tree-line {
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tree-indent {
+            color: var(--text-muted);
+        }
+
+        /* Tip boxes */
+        .tip-box {
+            background: rgba(62, 207, 142, 0.1);
+            border-left: 4px solid var(--supabase);
+            border-radius: 0 8px 8px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+
+        .tip-box h5 {
+            color: var(--supabase);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .tip-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge.green { background: rgba(62, 207, 142, 0.2); color: var(--supabase); }
+        .badge.blue { background: rgba(97, 218, 251, 0.2); color: var(--react); }
+        .badge.yellow { background: rgba(255, 212, 59, 0.2); color: var(--python); }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>Full Stack Development Environment</h1>
+            <p>A complete walkthrough of the modern development stack: database, hosting, frontend frameworks, IDE, and backend scripting.</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" data-section="overview">
+                <span>📊</span> Overview
+            </button>
+            <button class="tab" data-section="supabase">
+                <span>⚡</span> Supabase
+            </button>
+            <button class="tab" data-section="vercel">
+                <span>▲</span> Vercel
+            </button>
+            <button class="tab" data-section="react-next">
+                <span>⚛️</span> React + Next.js
+            </button>
+            <button class="tab" data-section="vscode">
+                <span>💻</span> VS Code
+            </button>
+            <button class="tab" data-section="python">
+                <span>🐍</span> Python
+            </button>
+            <button class="tab" data-section="github">
+                <span>🐙</span> GitHub
+            </button>
+            <button class="tab" data-section="domain">
+                <span>🌐</span> Domains & DNS
+            </button>
+            <button class="tab" data-section="gmail">
+                <span>📧</span> Gmail / Workspace
+            </button>
+        </nav>
+
+        <!-- OVERVIEW SECTION -->
+        <section class="section active" id="overview">
+            <div class="architecture-diagram">
+                <h3 class="diagram-title">🏗️ How Everything Connects</h3>
+                <div class="flow-diagram">
+                    <div class="flow-box vscode">
+                        <div class="flow-box-icon">💻</div>
+                        <div class="flow-box-label">VS Code</div>
+                        <small style="color: var(--text-muted);">Write Code</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box" style="border-top: 3px solid #f0f0f5;">
+                        <div class="flow-box-icon">🐙</div>
+                        <div class="flow-box-label">GitHub</div>
+                        <small style="color: var(--text-muted);">Store & Version</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box vercel">
+                        <div class="flow-box-icon">▲</div>
+                        <div class="flow-box-label">Vercel</div>
+                        <small style="color: var(--text-muted);">Deploy & Host</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box" style="border-top: 3px solid #f78c6c;">
+                        <div class="flow-box-icon">🌐</div>
+                        <div class="flow-box-label">Domain (DNS)</div>
+                        <small style="color: var(--text-muted);">cleaningexits.com</small>
+                    </div>
+                </div>
+                <div class="flow-diagram" style="margin-top: 20px;">
+                    <div class="flow-box python">
+                        <div class="flow-box-icon">🐍</div>
+                        <div class="flow-box-label">Python</div>
+                        <small style="color: var(--text-muted);">Scripts & Scrapers</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box supabase">
+                        <div class="flow-box-icon">⚡</div>
+                        <div class="flow-box-label">Supabase</div>
+                        <small style="color: var(--text-muted);">Database & Auth</small>
+                    </div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-box react">
+                        <div class="flow-box-icon">⚛️</div>
+                        <div class="flow-box-label">Next.js API</div>
+                        <small style="color: var(--text-muted);">Server Functions</small>
+                    </div>
+                </div>
+                <div class="flow-diagram" style="margin-top: 20px;">
+                    <div class="flow-box" style="border-top: 3px solid #f78c6c;">
+                        <div class="flow-box-icon">🌐</div>
+                        <div class="flow-box-label">Domain (DNS)</div>
+                        <small style="color: var(--text-muted);">MX Records</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box" style="border-top: 3px solid #ea4335;">
+                        <div class="flow-box-icon">📧</div>
+                        <div class="flow-box-label">Google Workspace</div>
+                        <small style="color: var(--text-muted);">jeff@domain.com</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo supabase">⚡</div>
+                        <div>
+                            <h3>Supabase</h3>
+                            <span class="tech-card-role">Database & Backend</span>
+                        </div>
+                    </div>
+                    <p>Open-source Firebase alternative. Provides PostgreSQL database, authentication, real-time subscriptions, and storage. Your data layer.</p>
+                    <ul class="feature-list">
+                        <li>PostgreSQL database with SQL access</li>
+                        <li>Built-in authentication (email, OAuth)</li>
+                        <li>Real-time data subscriptions</li>
+                        <li>Auto-generated REST API</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo vercel">▲</div>
+                        <div>
+                            <h3>Vercel</h3>
+                            <span class="tech-card-role">Hosting & Deployment</span>
+                        </div>
+                    </div>
+                    <p>Platform for frontend frameworks. Automatic deployments from Git, edge functions, and preview environments. Where your app lives.</p>
+                    <ul class="feature-list">
+                        <li>Zero-config deployments</li>
+                        <li>Automatic HTTPS & CDN</li>
+                        <li>Preview URLs for every branch</li>
+                        <li>Serverless functions</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo react">⚛️</div>
+                        <div>
+                            <h3>React + Next.js</h3>
+                            <span class="tech-card-role">Frontend Framework</span>
+                        </div>
+                    </div>
+                    <p>React is the UI library. Next.js adds routing, server-side rendering, and API routes. Together, they're your frontend foundation.</p>
+                    <ul class="feature-list">
+                        <li>Component-based architecture</li>
+                        <li>File-based routing (pages/app)</li>
+                        <li>Server & client components</li>
+                        <li>Built-in API routes</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo vscode">💻</div>
+                        <div>
+                            <h3>Visual Studio Code</h3>
+                            <span class="tech-card-role">Code Editor (IDE)</span>
+                        </div>
+                    </div>
+                    <p>Where you write all your code. Extensions make it powerful for any language. Integrated terminal, Git, and debugging.</p>
+                    <ul class="feature-list">
+                        <li>IntelliSense code completion</li>
+                        <li>Integrated terminal</li>
+                        <li>Git version control built-in</li>
+                        <li>Thousands of extensions</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo python">🐍</div>
+                        <div>
+                            <h3>Python</h3>
+                            <span class="tech-card-role">Scripts & Automation</span>
+                        </div>
+                    </div>
+                    <p>The glue that holds everything together. Web scrapers, data processing, automation scripts, and backend utilities.</p>
+                    <ul class="feature-list">
+                        <li>Web scraping (BeautifulSoup, Selenium)</li>
+                        <li>Data processing (Pandas)</li>
+                        <li>Database operations</li>
+                        <li>Scheduled tasks & automation</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo" style="background: rgba(255, 255, 255, 0.1); color: #f0f0f5;">🐙</div>
+                        <div>
+                            <h3>GitHub</h3>
+                            <span class="tech-card-role">Version Control & Code Storage</span>
+                        </div>
+                    </div>
+                    <p>Stores your code, tracks every change, and connects to Vercel for automatic deployments when you push.</p>
+                    <ul class="feature-list">
+                        <li>Version control (track all changes)</li>
+                        <li>Branches for features/experiments</li>
+                        <li>Triggers Vercel auto-deploy</li>
+                        <li>Collaboration & code review</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo" style="background: rgba(247, 140, 108, 0.15); color: #f78c6c;">🌐</div>
+                        <div>
+                            <h3>Domain & DNS</h3>
+                            <span class="tech-card-role">Domain Management</span>
+                        </div>
+                    </div>
+                    <p>Your domain name (cleaningexits.com) and DNS records that point it to Vercel hosting and Google email.</p>
+                    <ul class="feature-list">
+                        <li>Domain registration (Name.com)</li>
+                        <li>A/CNAME records → Vercel</li>
+                        <li>MX records → Google Workspace</li>
+                        <li>TXT records for verification</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <div class="tech-logo" style="background: rgba(234, 67, 53, 0.15); color: #ea4335;">📧</div>
+                        <div>
+                            <h3>Google Workspace</h3>
+                            <span class="tech-card-role">Professional Email</span>
+                        </div>
+                    </div>
+                    <p>Professional email with your domain (jeff@cleaningexits.com) plus Google Drive, Docs, Calendar for the team.</p>
+                    <ul class="feature-list">
+                        <li>Custom domain email</li>
+                        <li>Gmail interface you know</li>
+                        <li>Admin console for users</li>
+                        <li>Shared drives & calendars</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="connections">
+                <h3 class="diagram-title">🔗 How They Talk to Each Other</h3>
+                
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>💻</span> VS Code
+                    </div>
+                    <div class="connection-method">git push</div>
+                    <div class="connection-to">
+                        <span>🐙</span> GitHub
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>🐙</span> GitHub
+                    </div>
+                    <div class="connection-method">webhook</div>
+                    <div class="connection-to">
+                        <span>▲</span> Vercel
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>⚛️</span> Next.js
+                    </div>
+                    <div class="connection-method">@supabase/ssr</div>
+                    <div class="connection-to">
+                        <span>⚡</span> Supabase
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>🐍</span> Python
+                    </div>
+                    <div class="connection-method">supabase-py</div>
+                    <div class="connection-to">
+                        <span>⚡</span> Supabase
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>🌐</span> Domain DNS
+                    </div>
+                    <div class="connection-method">A record</div>
+                    <div class="connection-to">
+                        <span>▲</span> Vercel
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>🌐</span> Domain DNS
+                    </div>
+                    <div class="connection-method">MX records</div>
+                    <div class="connection-to">
+                        <span>📧</span> Google Workspace
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUPABASE SECTION -->
+        <section class="section" id="supabase">
+            <div class="section-header">
+                <h2><span class="icon">⚡</span> Supabase</h2>
+                <p>Your database and backend-as-a-service. Think of it as the "brain" that stores all your data and handles user authentication.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>What Supabase Provides</h3>
+                    <ul class="feature-list">
+                        <li><strong>PostgreSQL Database</strong> - Full SQL database, not NoSQL</li>
+                        <li><strong>Authentication</strong> - User signup, login, OAuth (Google, etc.)</li>
+                        <li><strong>Storage</strong> - File uploads (images, PDFs)</li>
+                        <li><strong>Real-time</strong> - Live data updates via websockets</li>
+                        <li><strong>Edge Functions</strong> - Serverless functions (Deno)</li>
+                        <li><strong>Auto-generated API</strong> - REST & GraphQL from your schema</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Key Concepts</h3>
+                    <ul class="feature-list">
+                        <li><strong>Tables</strong> - Like Excel sheets, store your data</li>
+                        <li><strong>Row Level Security (RLS)</strong> - Control who sees what</li>
+                        <li><strong>Foreign Keys</strong> - Link tables together</li>
+                        <li><strong>Views</strong> - Pre-built queries for common data</li>
+                        <li><strong>Functions</strong> - Stored procedures in PostgreSQL</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>📍 Supabase Dashboard Tour</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Table Editor</h5>
+                            <p>Visual interface to create tables, add columns, and edit data. Like a spreadsheet for your database.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>SQL Editor</h5>
+                            <p>Write raw SQL queries. Great for complex operations, migrations, and exploring your data.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Authentication</h5>
+                            <p>Configure sign-up methods, view users, and set up OAuth providers like Google.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>API Settings</h5>
+                            <p>Find your API URL and keys. You'll need these for connecting from Next.js and Python.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment">// Connecting from Next.js</span>
+<span class="keyword">import</span> { createClient } <span class="keyword">from</span> <span class="string">'@supabase/supabase-js'</span>
+
+<span class="keyword">const</span> supabase = <span class="function">createClient</span>(
+  process.env.<span class="variable">NEXT_PUBLIC_SUPABASE_URL</span>,
+  process.env.<span class="variable">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>
+)
+
+<span class="comment">// Fetch all businesses</span>
+<span class="keyword">const</span> { data, error } = <span class="keyword">await</span> supabase
+  .<span class="function">from</span>(<span class="string">'businesses'</span>)
+  .<span class="function">select</span>(<span class="string">'*'</span>)
+  .<span class="function">eq</span>(<span class="string">'industry'</span>, <span class="string">'cleaning'</span>)</pre>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># Connecting from Python</span>
+<span class="keyword">from</span> supabase <span class="keyword">import</span> create_client
+
+supabase = <span class="function">create_client</span>(
+    <span class="string">"https://xxx.supabase.co"</span>,
+    <span class="string">"your-anon-key"</span>
+)
+
+<span class="comment"># Insert scraped data</span>
+data = supabase.table(<span class="string">'listings'</span>).insert({
+    <span class="string">"name"</span>: <span class="string">"ABC Cleaning"</span>,
+    <span class="string">"price"</span>: <span class="number">250000</span>,
+    <span class="string">"source"</span>: <span class="string">"bizbuysell"</span>
+}).execute()</pre>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Pro Tip</h5>
+                <p>Use the SQL Editor to create indexes on columns you frequently search or filter by. This dramatically speeds up queries on large tables (like your 60k+ cleaning companies).</p>
+            </div>
+        </section>
+
+        <!-- VERCEL SECTION -->
+        <section class="section" id="vercel">
+            <div class="section-header">
+                <h2><span class="icon">▲</span> Vercel</h2>
+                <p>Your deployment platform. Push code to GitHub, Vercel automatically builds and deploys it. Your app is live in seconds.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>What Vercel Does</h3>
+                    <ul class="feature-list">
+                        <li><strong>Auto Deployments</strong> - Push to Git, it deploys</li>
+                        <li><strong>Preview URLs</strong> - Every PR gets its own URL</li>
+                        <li><strong>Edge Network</strong> - Fast globally via CDN</li>
+                        <li><strong>Serverless Functions</strong> - API routes run on demand</li>
+                        <li><strong>Environment Variables</strong> - Secure secrets storage</li>
+                        <li><strong>Analytics</strong> - Performance & visitor data</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Deployment Flow</h3>
+                    <ul class="feature-list">
+                        <li><strong>1.</strong> Connect GitHub repo to Vercel</li>
+                        <li><strong>2.</strong> Set environment variables (Supabase keys)</li>
+                        <li><strong>3.</strong> Push to main branch</li>
+                        <li><strong>4.</strong> Vercel builds Next.js app</li>
+                        <li><strong>5.</strong> Deployed to your-app.vercel.app</li>
+                        <li><strong>6.</strong> Add custom domain if desired</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>🚀 Vercel Dashboard Tour</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Projects</h5>
+                            <p>Each project is a deployed app. You can have multiple projects for different sites/apps.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Deployments</h5>
+                            <p>Every push creates a deployment. You can see build logs, roll back, and compare versions.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Settings → Environment Variables</h5>
+                            <p>Store your Supabase URL, API keys, and any other secrets here. Never commit these to Git!</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Domains</h5>
+                            <p>Add custom domains like cleaningexits.com and Vercel handles SSL certificates automatically.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Environment Variables</h5>
+                <p>In Vercel dashboard: Settings → Environment Variables. Add:<br>
+                <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code><br>
+                The NEXT_PUBLIC_ prefix makes them available in the browser. Keys without this prefix are server-only.</p>
+            </div>
+        </section>
+
+        <!-- REACT + NEXT.JS SECTION -->
+        <section class="section" id="react-next">
+            <div class="section-header">
+                <h2><span class="icon">⚛️</span> React + Next.js</h2>
+                <p>React is the UI library (components, state, interactivity). Next.js is the framework that adds routing, server rendering, and API routes.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>React Core Concepts</h3>
+                    <ul class="feature-list">
+                        <li><strong>Components</strong> - Reusable UI pieces (Button, Card, Header)</li>
+                        <li><strong>JSX</strong> - HTML-like syntax in JavaScript</li>
+                        <li><strong>Props</strong> - Pass data to components</li>
+                        <li><strong>State</strong> - Data that changes (useState)</li>
+                        <li><strong>Effects</strong> - Side effects like API calls (useEffect)</li>
+                        <li><strong>Hooks</strong> - Reusable logic (useState, useEffect, etc.)</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Next.js Adds</h3>
+                    <ul class="feature-list">
+                        <li><strong>File Routing</strong> - pages/about.js → /about</li>
+                        <li><strong>App Router</strong> - Newer routing with app/ directory</li>
+                        <li><strong>API Routes</strong> - Backend endpoints in pages/api/</li>
+                        <li><strong>Server Components</strong> - Components that run on server</li>
+                        <li><strong>SSR/SSG</strong> - Pre-render pages for SEO</li>
+                        <li><strong>Image Optimization</strong> - Automatic image handling</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="diagram-title">📁 Next.js Project Structure</h3>
+                <div class="file-tree">
+                    <div class="tree-line"><span class="folder">📁 my-app/</span></div>
+                    <div class="tree-line"><span class="tree-indent">├──</span> <span class="folder">📁 app/</span> <span class="badge green">App Router</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   ├──</span> <span class="special">layout.tsx</span> <span style="color: var(--text-muted);">— Root layout (header, footer)</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   ├──</span> <span class="special">page.tsx</span> <span style="color: var(--text-muted);">— Home page (/)</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   ├──</span> <span class="folder">📁 listings/</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   │   └──</span> <span class="file">page.tsx</span> <span style="color: var(--text-muted);">— /listings page</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   └──</span> <span class="folder">📁 api/</span> <span class="badge blue">API Routes</span></div>
+                    <div class="tree-line"><span class="tree-indent">│       └──</span> <span class="folder">📁 listings/</span></div>
+                    <div class="tree-line"><span class="tree-indent">│           └──</span> <span class="file">route.ts</span> <span style="color: var(--text-muted);">— /api/listings endpoint</span></div>
+                    <div class="tree-line"><span class="tree-indent">├──</span> <span class="folder">📁 components/</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   ├──</span> <span class="file">Header.tsx</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   ├──</span> <span class="file">ListingCard.tsx</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   └──</span> <span class="file">SearchBar.tsx</span></div>
+                    <div class="tree-line"><span class="tree-indent">├──</span> <span class="folder">📁 lib/</span></div>
+                    <div class="tree-line"><span class="tree-indent">│   └──</span> <span class="special">supabase.ts</span> <span style="color: var(--text-muted);">— Supabase client</span></div>
+                    <div class="tree-line"><span class="tree-indent">├──</span> <span class="file">.env.local</span> <span class="badge yellow">Secrets</span></div>
+                    <div class="tree-line"><span class="tree-indent">├──</span> <span class="file">package.json</span></div>
+                    <div class="tree-line"><span class="tree-indent">└──</span> <span class="file">next.config.js</span></div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment">// Example React Component</span>
+<span class="keyword">export default function</span> <span class="function">ListingCard</span>({ listing }) {
+  <span class="keyword">return</span> (
+    &lt;div className=<span class="string">"card"</span>&gt;
+      &lt;h3&gt;{listing.name}&lt;/h3&gt;
+      &lt;p&gt;${listing.price.toLocaleString()}&lt;/p&gt;
+      &lt;span&gt;{listing.location}&lt;/span&gt;
+    &lt;/div&gt;
+  )
+}
+
+<span class="comment">// Using it</span>
+&lt;ListingCard listing={myListing} /&gt;</pre>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment">// API Route (app/api/listings/route.ts)</span>
+<span class="keyword">import</span> { createClient } <span class="keyword">from</span> <span class="string">'@/lib/supabase'</span>
+<span class="keyword">import</span> { NextResponse } <span class="keyword">from</span> <span class="string">'next/server'</span>
+
+<span class="keyword">export async function</span> <span class="function">GET</span>(request) {
+  <span class="keyword">const</span> supabase = <span class="function">createClient</span>()
+  
+  <span class="keyword">const</span> { data, error } = <span class="keyword">await</span> supabase
+    .<span class="function">from</span>(<span class="string">'listings'</span>)
+    .<span class="function">select</span>(<span class="string">'*'</span>)
+    .<span class="function">order</span>(<span class="string">'created_at'</span>, { ascending: <span class="keyword">false</span> })
+  
+  <span class="keyword">return</span> NextResponse.<span class="function">json</span>(data)
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Server vs Client Components</h5>
+                <p>By default in App Router, components are Server Components (run on server, no interactivity). Add <code>"use client"</code> at the top of a file to make it a Client Component (runs in browser, can use useState, onClick, etc.).</p>
+            </div>
+        </section>
+
+        <!-- VS CODE SECTION -->
+        <section class="section" id="vscode">
+            <div class="section-header">
+                <h2><span class="icon">💻</span> Visual Studio Code</h2>
+                <p>Your code editor. This is where you write all your code—React components, Python scripts, SQL queries, everything.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>Essential Features</h3>
+                    <ul class="feature-list">
+                        <li><strong>File Explorer</strong> - Browse project files (left sidebar)</li>
+                        <li><strong>Editor</strong> - Where you write code (center)</li>
+                        <li><strong>Terminal</strong> - Run commands (Ctrl+`)</li>
+                        <li><strong>Source Control</strong> - Git integration (left sidebar)</li>
+                        <li><strong>Command Palette</strong> - Quick actions (Ctrl+Shift+P)</li>
+                        <li><strong>Search</strong> - Find across all files (Ctrl+Shift+F)</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Must-Have Extensions</h3>
+                    <ul class="feature-list">
+                        <li><strong>ESLint</strong> - JavaScript/TypeScript linting</li>
+                        <li><strong>Prettier</strong> - Auto-format code</li>
+                        <li><strong>Python</strong> - Python language support</li>
+                        <li><strong>GitLens</strong> - Enhanced Git features</li>
+                        <li><strong>Tailwind CSS IntelliSense</strong> - CSS autocomplete</li>
+                        <li><strong>Thunder Client</strong> - API testing (like Postman)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>⌨️ Essential Keyboard Shortcuts</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">⌘</div>
+                        <div class="step-content">
+                            <h5>Ctrl + ` (backtick)</h5>
+                            <p>Open/close the integrated terminal. Run npm commands, Python scripts, Git operations.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">⌘</div>
+                        <div class="step-content">
+                            <h5>Ctrl + P</h5>
+                            <p>Quick file open. Start typing a filename to jump to it instantly.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">⌘</div>
+                        <div class="step-content">
+                            <h5>Ctrl + Shift + P</h5>
+                            <p>Command Palette. Access any VS Code command by typing its name.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">⌘</div>
+                        <div class="step-content">
+                            <h5>Ctrl + Shift + F</h5>
+                            <p>Search across all files in your project. Great for finding where something is used.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">⌘</div>
+                        <div class="step-content">
+                            <h5>Ctrl + D</h5>
+                            <p>Select next occurrence. Keep pressing to select multiple instances for multi-cursor editing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="diagram-title">🖥️ VS Code Layout</h3>
+                <div style="display: grid; grid-template-columns: 200px 1fr 300px; gap: 10px; margin-top: 20px;">
+                    <div style="background: var(--bg-elevated); border-radius: 8px; padding: 16px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">SIDEBAR</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">📁 Explorer</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">🔍 Search</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">🔀 Source Control</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">🧩 Extensions</div>
+                    </div>
+                    <div style="background: var(--bg-elevated); border-radius: 8px; padding: 16px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">EDITOR</div>
+                        <div style="background: #0d0d12; border-radius: 4px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">
+                            <span style="color: #c792ea;">export default function</span> <span style="color: #82aaff;">Home</span>() {<br>
+                            &nbsp;&nbsp;<span style="color: #c792ea;">return</span> &lt;div&gt;Hello&lt;/div&gt;<br>
+                            }
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 20px;">TERMINAL</div>
+                        <div style="background: #0d0d12; border-radius: 4px; padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--supabase); margin-top: 8px;">
+                            $ npm run dev
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-elevated); border-radius: 8px; padding: 16px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">PANELS</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">📋 Problems</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">📤 Output</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 8px 0;">🐛 Debug Console</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Settings Sync</h5>
+                <p>Sign in with GitHub in VS Code to sync your settings, extensions, and keybindings across computers. Settings → Turn on Settings Sync.</p>
+            </div>
+        </section>
+
+        <!-- PYTHON SECTION -->
+        <section class="section" id="python">
+            <div class="section-header">
+                <h2><span class="icon">🐍</span> Python</h2>
+                <p>Your scripting powerhouse. Web scrapers, data processing, automation, and anything that runs outside the browser.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>What You Use Python For</h3>
+                    <ul class="feature-list">
+                        <li><strong>Web Scraping</strong> - BeautifulSoup, Selenium, Playwright</li>
+                        <li><strong>Data Processing</strong> - Pandas for cleaning/transforming</li>
+                        <li><strong>Database Operations</strong> - Bulk inserts, migrations</li>
+                        <li><strong>Scheduled Tasks</strong> - Cron jobs, automated runs</li>
+                        <li><strong>API Integrations</strong> - Hitting external APIs</li>
+                        <li><strong>File Processing</strong> - CSVs, PDFs, spreadsheets</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Key Libraries</h3>
+                    <ul class="feature-list">
+                        <li><strong>requests</strong> - HTTP requests</li>
+                        <li><strong>beautifulsoup4</strong> - HTML parsing</li>
+                        <li><strong>selenium / playwright</strong> - Browser automation</li>
+                        <li><strong>pandas</strong> - Data manipulation</li>
+                        <li><strong>supabase-py</strong> - Supabase client</li>
+                        <li><strong>python-dotenv</strong> - Environment variables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># Example: Scrape and store in Supabase</span>
+<span class="keyword">import</span> requests
+<span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup
+<span class="keyword">from</span> supabase <span class="keyword">import</span> create_client
+<span class="keyword">import</span> os
+<span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv
+
+<span class="function">load_dotenv</span>()  <span class="comment"># Load .env file</span>
+
+<span class="comment"># Connect to Supabase</span>
+supabase = <span class="function">create_client</span>(
+    os.getenv(<span class="string">"SUPABASE_URL"</span>),
+    os.getenv(<span class="string">"SUPABASE_KEY"</span>)
+)
+
+<span class="comment"># Scrape a page</span>
+response = requests.<span class="function">get</span>(<span class="string">"https://example.com/listings"</span>)
+soup = <span class="function">BeautifulSoup</span>(response.text, <span class="string">'html.parser'</span>)
+
+<span class="comment"># Extract data</span>
+listings = []
+<span class="keyword">for</span> item <span class="keyword">in</span> soup.<span class="function">select</span>(<span class="string">'.listing-card'</span>):
+    listings.<span class="function">append</span>({
+        <span class="string">"name"</span>: item.<span class="function">select_one</span>(<span class="string">'.title'</span>).text,
+        <span class="string">"price"</span>: item.<span class="function">select_one</span>(<span class="string">'.price'</span>).text,
+        <span class="string">"url"</span>: item.<span class="function">get</span>(<span class="string">'href'</span>)
+    })
+
+<span class="comment"># Bulk insert to Supabase</span>
+supabase.table(<span class="string">'listings'</span>).<span class="function">upsert</span>(listings).execute()</pre>
+            </div>
+
+            <div class="workflow">
+                <h4>🔧 Python Setup</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Virtual Environment</h5>
+                            <p><code>python -m venv venv</code> creates isolated dependencies. Activate with <code>venv\Scripts\activate</code> (Windows) or <code>source venv/bin/activate</code> (Mac/Linux).</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Install Dependencies</h5>
+                            <p><code>pip install requests beautifulsoup4 pandas supabase python-dotenv</code></p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Environment Variables</h5>
+                            <p>Create a <code>.env</code> file with your Supabase credentials. Never commit this to Git!</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Run Scripts</h5>
+                            <p><code>python scraper.py</code> in VS Code terminal. Use the Python extension for debugging.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># .env file (keep secret!)</span>
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...</pre>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Service Key vs Anon Key</h5>
+                <p><strong>Anon Key:</strong> Safe for browser/frontend, respects Row Level Security (RLS).<br>
+                <strong>Service Key:</strong> Bypasses RLS, use only in server-side Python scripts. Never expose in frontend!</p>
+            </div>
+        </section>
+        <!-- GITHUB SECTION -->
+        <section class="section" id="github">
+            <div class="section-header">
+                <h2><span class="icon">🐙</span> GitHub</h2>
+                <p>Version control and code hosting. GitHub stores your code, tracks changes, and connects to Vercel for automatic deployments.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>What GitHub Does</h3>
+                    <ul class="feature-list">
+                        <li><strong>Version Control</strong> - Track every change to your code</li>
+                        <li><strong>Repositories</strong> - Store projects (one repo per project)</li>
+                        <li><strong>Branches</strong> - Work on features without breaking main</li>
+                        <li><strong>Pull Requests</strong> - Review code before merging</li>
+                        <li><strong>Issues</strong> - Track bugs and feature requests</li>
+                        <li><strong>Actions</strong> - Automate tests and deployments</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Key Concepts</h3>
+                    <ul class="feature-list">
+                        <li><strong>Repository (repo)</strong> - A project folder with Git tracking</li>
+                        <li><strong>Commit</strong> - A saved snapshot of your changes</li>
+                        <li><strong>Push</strong> - Upload commits to GitHub</li>
+                        <li><strong>Pull</strong> - Download changes from GitHub</li>
+                        <li><strong>Branch</strong> - Parallel version of your code</li>
+                        <li><strong>Main/Master</strong> - The primary branch (production)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>🔄 Daily Git Workflow</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Pull Latest Changes</h5>
+                            <p><code>git pull origin main</code> — Get any changes from GitHub before starting work.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Make Your Changes</h5>
+                            <p>Edit files in VS Code. Save your work as you go.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Stage Changes</h5>
+                            <p><code>git add .</code> — Stage all changed files (or <code>git add filename</code> for specific files).</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Commit with Message</h5>
+                            <p><code>git commit -m "Add listing search feature"</code> — Save snapshot with description.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Push to GitHub</h5>
+                            <p><code>git push origin main</code> — Upload to GitHub. Vercel auto-deploys!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># First-time setup (clone existing repo)</span>
+git clone https://github.com/yourusername/cleaningexits.git
+cd cleaningexits
+
+<span class="comment"># Or create new repo from existing folder</span>
+git init
+git remote add origin https://github.com/yourusername/newproject.git
+git branch -M main
+git push -u origin main
+
+<span class="comment"># Check status (what's changed)</span>
+git status
+
+<span class="comment"># See commit history</span>
+git log --oneline
+
+<span class="comment"># Undo last commit (keep changes)</span>
+git reset --soft HEAD~1</pre>
+            </div>
+
+            <div class="connections">
+                <h3 class="diagram-title">🔗 GitHub Integrations</h3>
+                
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>💻</span> VS Code
+                    </div>
+                    <div class="connection-method">git push</div>
+                    <div class="connection-to">
+                        <span>🐙</span> GitHub
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>🐙</span> GitHub
+                    </div>
+                    <div class="connection-method">webhook trigger</div>
+                    <div class="connection-to">
+                        <span>▲</span> Vercel
+                    </div>
+                </div>
+
+                <div class="connection-row">
+                    <div class="connection-from">
+                        <span>▲</span> Vercel
+                    </div>
+                    <div class="connection-method">auto deploy</div>
+                    <div class="connection-to">
+                        <span>🌐</span> Live Site
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 VS Code Git Integration</h5>
+                <p>Use the Source Control panel (left sidebar, branch icon) to stage, commit, and push without terminal commands. Click the + to stage, enter message, click ✓ to commit, then sync to push.</p>
+            </div>
+        </section>
+
+        <!-- DOMAIN & DNS SECTION -->
+        <section class="section" id="domain">
+            <div class="section-header">
+                <h2><span class="icon">🌐</span> Domains & DNS</h2>
+                <p>How domain names work, DNS configuration, and connecting your domain to hosting (Vercel, Cloudways, etc.).</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>Domain Registrars</h3>
+                    <p>Where you buy and manage domain names. Common registrars:</p>
+                    <ul class="feature-list">
+                        <li><strong>Name.com</strong> - Simple interface, good prices</li>
+                        <li><strong>Namecheap</strong> - Budget-friendly, free privacy</li>
+                        <li><strong>GoDaddy</strong> - Popular but pricier</li>
+                        <li><strong>Google Domains</strong> - Clean, integrates with Google</li>
+                        <li><strong>Cloudflare</strong> - At-cost pricing, great DNS</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>DNS Record Types</h3>
+                    <ul class="feature-list">
+                        <li><strong>A Record</strong> - Points domain to IP address</li>
+                        <li><strong>CNAME</strong> - Points domain to another domain</li>
+                        <li><strong>MX</strong> - Mail server (for email)</li>
+                        <li><strong>TXT</strong> - Verification & security records</li>
+                        <li><strong>NS</strong> - Nameserver (who controls DNS)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="diagram-title">🗺️ How DNS Works</h3>
+                <div class="flow-diagram">
+                    <div class="flow-box" style="border-top: 3px solid #f0f0f5;">
+                        <div class="flow-box-icon">👤</div>
+                        <div class="flow-box-label">User Types</div>
+                        <small style="color: var(--text-muted);">cleaningexits.com</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box" style="border-top: 3px solid #f78c6c;">
+                        <div class="flow-box-icon">📖</div>
+                        <div class="flow-box-label">DNS Lookup</div>
+                        <small style="color: var(--text-muted);">Find IP address</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box vercel">
+                        <div class="flow-box-icon">▲</div>
+                        <div class="flow-box-label">Vercel Server</div>
+                        <small style="color: var(--text-muted);">76.76.21.21</small>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box react">
+                        <div class="flow-box-icon">📄</div>
+                        <div class="flow-box-label">Your Site</div>
+                        <small style="color: var(--text-muted);">Loads!</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>🔧 Connecting Domain to Vercel</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Add Domain in Vercel</h5>
+                            <p>Project Settings → Domains → Add your domain (e.g., cleaningexits.com)</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Get DNS Records from Vercel</h5>
+                            <p>Vercel shows you what records to add: usually an A record (76.76.21.21) or CNAME (cname.vercel-dns.com)</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Add Records at Registrar</h5>
+                            <p>Log into Name.com → DNS Records → Add the A or CNAME record Vercel gave you</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Wait for Propagation</h5>
+                            <p>DNS changes take 5 min to 48 hours to spread globally. Usually under 30 minutes.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>SSL Auto-Generated</h5>
+                            <p>Vercel automatically creates HTTPS certificate. Green lock appears!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># Example DNS records for Vercel hosting</span>
+
+<span class="keyword">Type</span>    <span class="variable">Name</span>    <span class="string">Value</span>               <span class="comment">TTL</span>
+────────────────────────────────────────────────────────
+A       @       76.76.21.21         3600
+CNAME   www     cname.vercel-dns.com 3600
+
+<span class="comment"># The @ symbol means "root domain" (cleaningexits.com)</span>
+<span class="comment"># www is for www.cleaningexits.com</span></pre>
+            </div>
+
+            <div class="workflow">
+                <h4>🔧 Connecting Domain to Cloudways (WordPress)</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Create Project & Application in Cloudways</h5>
+                            <p>Cloudways dashboard → Add Project → Create Application (WordPress)</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Get Server IP</h5>
+                            <p>Find your server's public IP in Cloudways (e.g., 123.45.67.89)</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Add Domain in Cloudways</h5>
+                            <p>Application → Domain Management → Add your domain</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Point DNS to Cloudways</h5>
+                            <p>At your registrar, create A record pointing to Cloudways server IP</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Enable SSL</h5>
+                            <p>Cloudways → SSL Certificate → Let's Encrypt (free)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Check DNS Propagation</h5>
+                <p>Use <a href="https://www.whatsmydns.net" style="color: var(--supabase);">whatsmydns.net</a> to see if your DNS changes have propagated globally. Enter your domain and record type to check status worldwide.</p>
+            </div>
+        </section>
+
+        <!-- GMAIL / GOOGLE WORKSPACE SECTION -->
+        <section class="section" id="gmail">
+            <div class="section-header">
+                <h2><span class="icon">📧</span> Gmail / Google Workspace</h2>
+                <p>Professional email with your domain (you@yourdomain.com) using Google Workspace (formerly G Suite).</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>What Google Workspace Provides</h3>
+                    <ul class="feature-list">
+                        <li><strong>Custom Email</strong> - jeff@cleaningexits.com</li>
+                        <li><strong>Gmail Interface</strong> - Same Gmail you know</li>
+                        <li><strong>Google Drive</strong> - Cloud storage per user</li>
+                        <li><strong>Google Docs/Sheets</strong> - Collaborative documents</li>
+                        <li><strong>Google Calendar</strong> - Shared team calendars</li>
+                        <li><strong>Admin Console</strong> - Manage users & security</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h3>MX Records for Gmail</h3>
+                    <p>These DNS records tell email servers to route mail to Google:</p>
+                    <div class="code-block" style="margin-top: 15px; font-size: 0.75rem;">
+                        <pre><span class="keyword">Priority</span>  <span class="string">Mail Server</span>
+──────────────────────────────────
+1         ASPMX.L.GOOGLE.COM
+5         ALT1.ASPMX.L.GOOGLE.COM
+5         ALT2.ASPMX.L.GOOGLE.COM
+10        ALT3.ASPMX.L.GOOGLE.COM
+10        ALT4.ASPMX.L.GOOGLE.COM</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow">
+                <h4>📬 Setting Up Google Workspace Email</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Sign Up for Google Workspace</h5>
+                            <p>Go to <a href="https://workspace.google.com" style="color: var(--supabase);">workspace.google.com</a> → Start free trial → Enter your domain</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Verify Domain Ownership</h5>
+                            <p>Google gives you a TXT record to add to DNS. This proves you own the domain.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Add MX Records</h5>
+                            <p>At your registrar (Name.com), add Google's MX records to route email to Gmail servers.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Create User Accounts</h5>
+                            <p>Admin Console → Users → Add users (jeff@, support@, etc.)</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h5>Access Email</h5>
+                            <p>Go to Gmail, sign in with your new email. Done!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre><span class="comment"># DNS Records needed for Google Workspace</span>
+
+<span class="comment"># 1. Domain verification (TXT record)</span>
+<span class="keyword">Type</span>    <span class="variable">Name</span>    <span class="string">Value</span>
+TXT     @       google-site-verification=xxxxxxxxxxxxx
+
+<span class="comment"># 2. MX Records (for receiving email)</span>
+<span class="keyword">Type</span>    <span class="variable">Priority</span>    <span class="string">Mail Server</span>
+MX      1           ASPMX.L.GOOGLE.COM
+MX      5           ALT1.ASPMX.L.GOOGLE.COM
+MX      5           ALT2.ASPMX.L.GOOGLE.COM
+
+<span class="comment"># 3. SPF Record (for sending email - prevents spam flags)</span>
+TXT     @       v=spf1 include:_spf.google.com ~all
+
+<span class="comment"># 4. DKIM Record (email authentication - get from Admin Console)</span>
+TXT     google._domainkey    v=DKIM1; k=rsa; p=MIGfMA0GCS...</pre>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 class="diagram-title">📍 Google Admin Console Tour</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 20px; border-left: 3px solid #4285f4;">
+                        <div style="font-size: 1.5rem; margin-bottom: 8px;">👥</div>
+                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin-bottom: 4px;">Users</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Add/remove email accounts, reset passwords</div>
+                    </div>
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 20px; border-left: 3px solid #34a853;">
+                        <div style="font-size: 1.5rem; margin-bottom: 8px;">🌐</div>
+                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin-bottom: 4px;">Domains</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Manage connected domains, add aliases</div>
+                    </div>
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 20px; border-left: 3px solid #fbbc04;">
+                        <div style="font-size: 1.5rem; margin-bottom: 8px;">🔒</div>
+                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin-bottom: 4px;">Security</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">2FA, password policies, alerts</div>
+                    </div>
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 20px; border-left: 3px solid #ea4335;">
+                        <div style="font-size: 1.5rem; margin-bottom: 8px;">💳</div>
+                        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin-bottom: 4px;">Billing</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Subscription, add/remove licenses</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h5>💡 Email Aliases</h5>
+                <p>In Admin Console, you can add aliases so multiple addresses go to one inbox. Example: support@cleaningexits.com, info@cleaningexits.com, sales@cleaningexits.com → all go to jeff@cleaningexits.com</p>
+            </div>
+
+            <div class="tip-box" style="background: rgba(97, 218, 251, 0.1); border-left-color: var(--react);">
+                <h5>💡 SPF, DKIM, DMARC</h5>
+                <p>These three DNS records prevent your emails from going to spam. SPF says who can send email for your domain. DKIM cryptographically signs emails. DMARC tells receivers what to do if checks fail. Google Workspace guides you through setup.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Add active to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                // Show target section
+                const targetId = tab.dataset.section;
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
